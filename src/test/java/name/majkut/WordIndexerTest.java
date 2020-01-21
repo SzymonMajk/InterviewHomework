@@ -107,4 +107,88 @@ public class WordIndexerTest {
         assertThat(afterCleaning.get('b'), hasSize(1));
         assertThat(afterCleaning.get('b'), contains("b"));
     }
+
+    @Test
+    public void shouldLowerCaseResults() {
+        String givenEntry = "aB bc CA";
+
+        Map<Character, Set<String>> result = indexEntry(givenEntry);
+
+        assertEquals(3, result.size());
+        assertTrue(result.containsKey('a'));
+        assertThat(result.get('a'), hasSize(2));
+        assertThat(result.get('a'), contains("ab", "ca"));
+        assertTrue(result.containsKey('b'));
+        assertThat(result.get('b'), hasSize(2));
+        assertThat(result.get('b'), contains("ab", "bc"));
+        assertTrue(result.containsKey('c'));
+        assertThat(result.get('c'), hasSize(2));
+        assertThat(result.get('c'), contains("bc", "ca"));
+    }
+
+    @Test
+    public void shouldOmitCommasAndDots() {
+        String givenEntry = "aB, bc CA.";
+
+        Map<Character, Set<String>> result = indexEntry(givenEntry);
+
+        assertEquals(3, result.size());
+        assertTrue(result.containsKey('a'));
+        assertThat(result.get('a'), hasSize(2));
+        assertThat(result.get('a'), contains("ab", "ca"));
+        assertTrue(result.containsKey('b'));
+        assertThat(result.get('b'), hasSize(2));
+        assertThat(result.get('b'), contains("ab", "bc"));
+        assertTrue(result.containsKey('c'));
+        assertThat(result.get('c'), hasSize(2));
+        assertThat(result.get('c'), contains("bc", "ca"));
+    }
+
+    @Test
+    public void shouldProperlyProceedLongSentence() {
+        String givenEntry = "ala ma kota, kot koduje w Javie Kota";
+
+        Map<Character, Set<String>> result = indexEntry(givenEntry);
+
+        assertEquals(13, result.size());
+        assertTrue(result.containsKey('a'));
+        assertThat(result.get('a'), hasSize(4));
+        assertThat(result.get('a'), contains("ala", "javie", "kota", "ma"));
+        assertTrue(result.containsKey('d'));
+        assertThat(result.get('d'), hasSize(1));
+        assertThat(result.get('d'), contains("koduje"));
+        assertTrue(result.containsKey('e'));
+        assertThat(result.get('e'), hasSize(2));
+        assertThat(result.get('e'), contains("javie", "koduje"));
+        assertTrue(result.containsKey('i'));
+        assertThat(result.get('i'), hasSize(1));
+        assertThat(result.get('i'), contains("javie"));
+        assertTrue(result.containsKey('j'));
+        assertThat(result.get('j'), hasSize(2));
+        assertThat(result.get('j'), contains("javie", "koduje"));
+        assertTrue(result.containsKey('k'));
+        assertThat(result.get('k'), hasSize(3));
+        assertThat(result.get('k'), contains("koduje", "kot", "kota"));
+        assertTrue(result.containsKey('l'));
+        assertThat(result.get('l'), hasSize(1));
+        assertThat(result.get('l'), contains("ala"));
+        assertTrue(result.containsKey('m'));
+        assertThat(result.get('m'), hasSize(1));
+        assertThat(result.get('m'), contains("ma"));
+        assertTrue(result.containsKey('o'));
+        assertThat(result.get('o'), hasSize(3));
+        assertThat(result.get('o'), contains("koduje", "kot", "kota"));
+        assertTrue(result.containsKey('t'));
+        assertThat(result.get('t'), hasSize(2));
+        assertThat(result.get('t'), contains("kot", "kota"));
+        assertTrue(result.containsKey('u'));
+        assertThat(result.get('u'), hasSize(1));
+        assertThat(result.get('u'), contains("koduje"));
+        assertTrue(result.containsKey('v'));
+        assertThat(result.get('v'), hasSize(1));
+        assertThat(result.get('v'), contains("javie"));
+        assertTrue(result.containsKey('w'));
+        assertThat(result.get('w'), hasSize(1));
+        assertThat(result.get('w'), contains("w"));
+    }
 }

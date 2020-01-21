@@ -1,6 +1,8 @@
 plugins {
-    id 'java'
+    id "java"
 }
+
+apply plugin : "java"
 
 group 'name.majkut'
 version '1.0'
@@ -14,4 +16,9 @@ repositories {
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     testImplementation 'org.hamcrest:hamcrest:2.2'
+}
+
+task(runMain, dependsOn: 'classes', type: JavaExec) {
+    main = 'name.majkut.WordIndexer'
+    classpath = sourceSets.main.runtimeClasspath
 }
