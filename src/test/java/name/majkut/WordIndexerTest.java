@@ -12,7 +12,7 @@ import static org.junit.Assert.*;
 public class WordIndexerTest {
 
     private Map<Character, Set<String>> indexEntry(String givenEntry) {
-        return new WordIndexer().indexSentence(givenEntry);
+        return new WordIndexer(new MatcherWordSplitter()).indexSentence(givenEntry);
     }
 
     @Test
@@ -67,5 +67,44 @@ public class WordIndexerTest {
         assertThat(result.get('a'), contains("ab", "ba"));
         assertThat(result.get('b'), hasSize(2));
         assertThat(result.get('b'), contains("ab", "ba"));
+    }
+
+    @Test
+    public void shouldReturnEmptyMapWhenNoCharactersInSentence() {
+        String givenEntry = "";
+        String givenEntrySpaces = " ";
+
+        Map<Character, Set<String>> result = indexEntry(givenEntry);
+
+        assertEquals(0, result.size());
+
+        result = indexEntry(givenEntrySpaces);
+
+        assertEquals(0, result.size());
+    }
+
+    @Test
+    public void shouldReturnEmptyMapWhenNullSentence() {
+        String givenEntry = null;
+
+        Map<Character, Set<String>> result = indexEntry(givenEntry);
+
+        assertEquals(0, result.size());
+    }
+
+    @Test
+    public void shouldProperlyClearIndexer() {
+        String givenEntry = "a";
+        String entryAfterCleaning = "b";
+
+        WordIndexer indexer = new WordIndexer(new MatcherWordSplitter());
+        indexer.indexSentence(givenEntry);
+        indexer.clearIndexer();
+        Map<Character, Set<String>> afterCleaning = indexer.indexSentence(entryAfterCleaning);
+
+        assertEquals(1, afterCleaning.size());
+        assertTrue(afterCleaning.containsKey('b'));
+        assertThat(afterCleaning.get('b'), hasSize(1));
+        assertThat(afterCleaning.get('b'), contains("b"));
     }
 }
