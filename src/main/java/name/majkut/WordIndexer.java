@@ -1,21 +1,40 @@
 package name.majkut;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class WordIndexer {
 
-    public Map<Character, List<String>> indexSentence(String sentence) {
-        Map<Character, List<String>> indexed = new HashMap<>();
+    private Logger logger = Logger.getLogger("indexer");
 
-        for (Character indexKey : sentence.toCharArray()) {
-            List<String> indexValue = new ArrayList<>();
-            indexValue.add(sentence);
-            indexed.put(indexKey, indexValue);
+    public Map<Character, Set<String>> indexSentence(String sentence) {
+        Map<Character, Set<String>> indexed = new HashMap<>();
+        Pattern pattern = Pattern.compile("\\w+");
+        Matcher matcher = pattern.matcher(sentence);
+        while (matcher.find()) {
+            String word = matcher.group();
+            logger.log(Level.INFO, "Word found: " + word);
+            indexWord(word, indexed);
         }
 
         return indexed;
+    }
+
+    private void indexWord(String word, Map<Character, Set<String>> indexed) {
+        for (Character indexKey : word.toCharArray()) {
+            Set<String> indexValue;
+
+            if (indexed.containsKey(indexKey)) {
+                indexValue = indexed.get(indexKey);
+            } else {
+                indexValue = new TreeSet<>();
+            }
+
+            indexValue.add(word);
+            indexed.put(indexKey, indexValue);
+        }
     }
 }
